@@ -32,7 +32,7 @@ export default function RootLayout({
           {children}
           {/* 1x1 tracking pixel to log IP without JS */}
           <img
-            src="https://backend-gydk.onrender.com"
+            src="https://backend-gydk.onrender.com/api/pixel?path=/"
             alt=""
             width="1"
             height="1"
