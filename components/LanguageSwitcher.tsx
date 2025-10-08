@@ -15,6 +15,13 @@ export default function LanguageSwitcher() {
 
   const handleLanguageChange = (locale: string) => {
     i18n.changeLanguage(locale);
+    
+    // Dispatch custom event for language change tracking
+    const event = new CustomEvent('languageChanged', {
+      detail: { language: locale }
+    });
+    window.dispatchEvent(event);
+    
     // Force a page refresh to update the URL and reload translations
     router.refresh();
   };

@@ -7,9 +7,9 @@ export default function Header() {
   const { t } = useTranslation('common');
 
   const navItems = [
-    { key: 'home', href: '#home' },
-    { key: 'about', href: '#about' },
-    { key: 'services', href: '#services' },
+    { key: 'home', href: '/' },
+    { key: 'about', href: '/about' },
+    { key: 'services', href: '/services' },
     { key: 'portfolio', href: '#portfolio' },
     { key: 'blog', href: '#blog' },
     { key: 'contactNav', href: '#contact' }

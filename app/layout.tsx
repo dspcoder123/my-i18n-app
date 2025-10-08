@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import I18nProvider from "../components/I18nProvider";
 import Header from "../components/Header";
+import PageTracker from "@/components/PageTracker";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,6 +15,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,14 +33,9 @@ export default function RootLayout({
         <I18nProvider>
           <Header />
           {children}
-          {/* 1x1 tracking pixel to log IP without JS */}
-          <img
-            src="https://backend-gydk.onrender.com/api/pixel?path=/"
-            alt=""
-            width="1"
-            height="1"
-            style={{ position: "absolute", left: "-9999px" }}
-          />
+          <Suspense fallback={null}>
+            <PageTracker />
+          </Suspense>
         </I18nProvider>
       </body>
     </html>
