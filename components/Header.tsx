@@ -11,7 +11,7 @@ export default function Header() {
     { key: 'about', href: '/about' },
     { key: 'services', href: '/services' },
     { key: 'portfolio', href: '#portfolio' },
-    { key: 'blog', href: '#blog' },
+    { key: 'blog', href: '/blog' },
     { key: 'contactNav', href: '#contact' }
   ];
 
