@@ -1,24 +1,17 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
+// Page tracking component
 export default function PageTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { i18n } = useTranslation();
-  const lastTrackedRef = useRef<string>('');
 
   const trackPageView = (path: string, language: string) => {
-    const trackKey = `${path}:${language}`;
-    
-    if (lastTrackedRef.current === trackKey) {
-      return;
-    }
-    
-    lastTrackedRef.current = trackKey;
-    
+    // Add language as query parameter to the path
     const pathWithLanguage = path.includes('?') 
       ? `${path}&lang=${language}`
       : `${path}?lang=${language}`;
@@ -29,24 +22,40 @@ export default function PageTracker() {
       timestamp: new Date().toISOString()
     };
     
+    // Track page view with language in path
     fetch(`https://backend-gydk.onrender.com/api/track`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(trackingData),
       credentials: 'omit'
-    }).catch(() => {});
+    }).catch(() => {}); // Silent fail
   };
 
   useEffect(() => {
     const path = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
     const language = i18n.language || 'en';
     
-    const timeoutId = setTimeout(() => {
-      trackPageView(path, language);
-    }, 100);
-    
-    return () => clearTimeout(timeoutId);
+    trackPageView(path, language);
   }, [pathname, searchParams, i18n.language]);
 
-  return null;
+  // Listen for language change events
+  useEffect(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      const path = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+      const language = event.detail.language;
+      
+      // Track language change with current path
+      trackPageView(path, language);
+    };
+
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+    };
+  }, [pathname, searchParams]);
+
+  return null; // This component renders nothing
 }
