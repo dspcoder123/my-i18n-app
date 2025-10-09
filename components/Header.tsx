@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type StrapiHeaderItem = {
   id: number;
@@ -20,7 +21,8 @@ type StrapiResponse<T> = {
 };
 
 export default function Header() {
-  const [locale, setLocale] = useState<'en' | 'hi'>('en');
+  const { i18n, t } = useTranslation('common');
+  const currentLocale = (i18n.language as 'en' | 'hi') || 'en';
   const [headerItem, setHeaderItem] = useState<StrapiHeaderItem | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export default function Header() {
       setIsLoading(true);
       setError(null);
       try {
-        const url = `${strapiBaseUrl}/api/headers?locale=${locale}&pagination[pageSize]=1`;
+        const url = `${strapiBaseUrl}/api/headers?locale=${currentLocale}&pagination[pageSize]=1`;
         const res = await fetch(url, { next: { revalidate: 60 } });
         if (!res.ok) throw new Error(`Failed to load header (${res.status})`);
         const json: StrapiResponse<StrapiHeaderItem> = await res.json();
@@ -52,7 +54,7 @@ export default function Header() {
     return () => {
       isCancelled = true;
     };
-  }, [locale, strapiBaseUrl]);
+  }, [currentLocale, strapiBaseUrl]);
 
   const siteTitle = headerItem?.MultiLang || 'Site';
   const homeLabel = headerItem?.Home || 'Home';
@@ -65,15 +67,15 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-container">
-        <div className="logo">
+        <a href="/" className="logo" style={{ textDecoration: 'none', color: 'inherit' }}>
           <span className="logo-icon">🌍</span>
           <span className="logo-text">{siteTitle}</span>
-        </div>
+        </a>
 
         <nav className="nav">
           <ul className="nav-list">
             <li className="nav-item">
-              <a href="#home" className="nav-link">
+              <a href="/" className="nav-link">
                 {isLoading && !headerItem ? '…' : homeLabel}
               </a>
             </li>
@@ -107,10 +109,41 @@ export default function Header() {
 
         <div className="language-section">
           <select
-            aria-label="Select language"
-            value={locale}
-            onChange={(e) => setLocale(e.target.value as 'en' | 'hi')}
+            aria-label={t ? t('selectLanguage') : 'Select language'}
+            value={currentLocale}
+            onChange={(e) => i18n.changeLanguage(e.target.value)}
             className="language-select"
+            style={{
+              padding: '10px 14px',
+              borderRadius: 10,
+              border: '1px solid #e5e7eb',
+              backgroundColor: '#ffffff',
+              color: '#111827',
+              fontSize: 14,
+              fontWeight: 500,
+              outline: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              cursor: 'pointer',
+              transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+              minWidth: 160,
+              marginLeft: 16,
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)');
+              (e.currentTarget.style.borderColor = '#d1d5db');
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)');
+              (e.currentTarget.style.borderColor = '#e5e7eb');
+            }}
+            onFocus={(e) => {
+              (e.currentTarget.style.boxShadow = '0 0 0 4px rgba(59,130,246,0.15)');
+              (e.currentTarget.style.borderColor = '#93c5fd');
+            }}
+            onBlur={(e) => {
+              (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)');
+              (e.currentTarget.style.borderColor = '#e5e7eb');
+            }}
           >
             <option value="en">English</option>
             <option value="hi">हिन्दी</option>
