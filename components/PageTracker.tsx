@@ -23,7 +23,7 @@ export default function PageTracker() {
     };
     
     // Track page view with language in path
-    fetch(`http://localhost:4000/api/track`, {
+    fetch(`https://backend-gydk.onrender.com/api/track`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
